@@ -21,7 +21,6 @@ namespace Hero
         private void Start()
         {
             _camera = Camera.main;
-            CameraFollow();
         }
 
         private void FixedUpdate()
@@ -38,7 +37,5 @@ namespace Hero
 
             _rigidbody.velocity = movementVector * (_moveSpeed);
         }
-
-        private void CameraFollow() => _camera.GetComponent<CameraFollow>().Follow(gameObject);
     }
 }
