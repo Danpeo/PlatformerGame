@@ -1,23 +1,15 @@
 using Services;
-using UnityEngine;
 
 namespace Infrastructure
 {
     public class Game
     {
         public static IInputService InputService;
-
-        public Game()
+        public GameStateMachine StateMachine { get; set; }
+        
+        public Game(ICoroutineRunner coroutineRunner)
         {
-            RegisterInputService();
-        }
-
-        private void RegisterInputService()
-        {
-            if (Application.isEditor)
-                InputService = new StandaloneInputService();
-            else
-                InputService = new MobileInputService();
+            StateMachine = new GameStateMachine(new SceneLoader(coroutineRunner));
         }
     }
 }
