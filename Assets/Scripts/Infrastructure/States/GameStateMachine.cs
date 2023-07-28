@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using Hud;
 using Infrastructure.Factory;
+using Infrastructure.SaveLoad;
 using Infrastructure.Services;
+using Infrastructure.Services.PersistentProgress;
 
 namespace Infrastructure.States
 {
@@ -15,12 +17,18 @@ namespace Infrastructure.States
         {
             _states = new Dictionary<Type, IExitableState>()
             {
-                [typeof(BootStrapState)] = new BootStrapState(this, sceneLoader, services),
-                [typeof(LoadLevelState)] = new LoadLevelState(this, sceneLoader, curtain, services.Single<IGameFactory>()),
+                [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, services),
+                
+                [typeof(LoadLevelState)] =
+                    new LoadLevelState(this, sceneLoader, curtain, services.Single<IGameFactory>()),
+                
+                [typeof(LoadProgressState)] = new LoadProgressState(this, services.Single<IPersistentProgressService>(),
+                    services.Single<ISaveLoadService>()),
+                
                 [typeof(GameLoopState)] = new GameLoopState(this),
             };
         }
-        
+
         public void Enter<TypeState>() where TypeState : class, IState
         {
             IState state = ChangeState<TypeState>();
@@ -38,11 +46,11 @@ namespace Infrastructure.States
             _activeState?.Exit();
             TypeState state = GetState<TypeState>();
             _activeState = state;
-            
+
             return state;
         }
 
-        private TypeState GetState<TypeState>() where TypeState : class, IExitableState => 
+        private TypeState GetState<TypeState>() where TypeState : class, IExitableState =>
             _states[typeof(TypeState)] as TypeState;
     }
 }
